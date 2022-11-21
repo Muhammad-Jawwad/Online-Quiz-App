@@ -1,109 +1,89 @@
 const pool = require("../../config/database");
 
 module.exports = {
-  create: (data, callBack) => {
-    console.log(data);
-    pool.query(
-      `insert into registration(firstName, lastName, gender, email, password, number) 
-            values(?,?,?,?,?,?)`,
-      [
-        data.firstName,
-        data.lastName,
-        data.gender,
-        data.email,
-        data.password,
-        data.number
-      ],
-      (error, results, fields) => {
-        if (error) {
-          callBack(error);
-        }
-        return callBack(null, results);
-      }
-    );
-  },
-  getUserByUserEmail: (email, callBack) => {
-    pool.query(
-      `select * from registration where email = ?`,
-      [email],
-      (error, results, fields) => {
-        if (error) {
-          callBack(error);
-        }
-        return callBack(null, results[0]);
-      }
-    );
-  },
-  getUserByUserId: (id, callBack) => {
-    pool.query(
-      `select id,firstName,lastName,gender,email,number from registration where id = ?`,
-      [id],
-      (error, results, fields) => {
-        if (error) {
-          callBack(error);
-        }
-        return callBack(null, results[0]);
-      }
-    );
-  },
-  getUsers: callBack => {
-    pool.query(
-      `select id,firstName,lastName,gender,email,number from registration`,
-      [],
-      (error, results, fields) => {
-        if (error) {
-          callBack(error);
-        }
-        return callBack(null, results);
-      }
-    );
-  },
-  updateUser: (data, callBack) => {
-    pool.query(
-      `update registration set firstName=?, lastName=?, gender=?, email=?, password=?, number=? where id = ?`,
-      [
-        data.first_name,
-        data.last_name,
-        data.gender,
-        data.email,
-        data.password,
-        data.number,
-        data.id
-      ],
-      (error, results, fields) => {
-        if (error) {
-          callBack(error);
-        }
-        return callBack(null, results[0]);
-      }
-    );
-  },
-  deleteUser: (data, callBack) => {
-    pool.query(
-      `delete from registration where id = ?`,
-      [data.id],
-      (error, results, fields) => {
-        if (error) {
-          callBack(error);
-        }
-        return callBack(null, results[0]);
-      }
-    );
-  }
-  // upload: (data, callBack) => {
-  //   console.log(data);
-  //   pool.query(
-  //     `insert into registration(fileName) 
-  //           values(?)`,
-  //     [
-  //       data.fileName,
-  //     ],
-  //     (error, results, fields) => {
-  //       if (error) {
-  //         callBack(error);
-  //       }
-  //       return callBack(null, results);
-  //     }
-  //   );
-  // }
-};
+    create: (data, callBack) => {
+        console.log(data);
+        pool.query(
+            `insert into register_table(name, email_id, password, mobile_number) 
+              values(?,?,?,?)`,
+            [
+                data.name,
+                data.email_id,
+                data.password,
+                data.mobile_number
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+    createCategory: (data, callBack) => {
+        console.log(data);
+        pool.query(
+            `insert into quiz_categories(category_name,category_picture,no_of_quiz) 
+              values(?,?,?)`,
+            [
+                data.category_name,
+                data.category_picture,
+                data.no_of_quiz
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+    getCategoryByID: (id, callBack) => {
+        pool.query(
+            `select category_id,category_name,category_picture,no_of_quiz from quiz_categories where category_id = ?`,
+            [id],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results[0]);
+            }
+        );
+    },
+    getCategories: callBack => {
+        pool.query(
+            `select category_id,category_name,category_picture,no_of_quiz from quiz_categories`,
+            [],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+    getQuizByCategoryId: (id, callBack) => {
+        pool.query(
+            `select quiz_no,quiz_name,description from quiz_by_category where category_id = ?`,
+            [id],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results[0]);
+            }
+        );
+    },
+    getUserByUserEmail: (email, callBack) => {
+        pool.query(
+            `select * from register_table where email_id = ?`,
+            [email],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results[0]);
+            }
+        );
+    }
+}
