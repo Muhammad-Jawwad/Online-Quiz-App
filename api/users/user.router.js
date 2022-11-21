@@ -1,28 +1,25 @@
 const router = require("express").Router();
-// const { checkToken } = require("../../auth/token_validation");
 
 const {
-  createUser,
-  // getUserByUserId,
-  getUsers
-  // updateUsers,
-  // deleteUser,
-  // login
+    createUser,
+    createCategory,
+    login,
+    getQuizByCategoryId,
+    getCategories,
+    getCategoryByID
 } = require("./user.controller");
 
-
-// router.get("/", checkToken, getUsers);
-// router.post("/", checkToken, createUser);
-// router.get("/:id", checkToken, getUserByUserId);
-// router.post("/login", login);
-// router.patch("/", checkToken, updateUsers);
-// router.delete("/", checkToken, deleteUser);
-
-router.get("/", getUsers);
-router.post("/", createUser);
+// router.get("/", getUsers);
+router.post("/register", createUser);
+router.post("/addcategory", createCategory);
+router.get("/category", getCategories);
+router.get("/quizbycategory/:id", getQuizByCategoryId);
+router.get("/category/:id", getCategoryByID);
 // router.get("/:id", getUserByUserId);
-// router.post("/login", login);
+router.post("/login", login);
 // router.patch("/", updateUsers);
 // router.delete("/", deleteUser);
+// router.post("/upload",upload);
+// router.post("/email",sendEmail);
 
 module.exports = router;
