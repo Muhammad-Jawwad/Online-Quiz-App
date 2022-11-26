@@ -61,15 +61,38 @@ module.exports = {
             }
         );
     },
-    addInAttempted: (data, callBack) => {
+    addInAttempted: (data, result, callBack) => {
         console.log(data);
+        let answer = 0;
+        if (result) {
+            answer = 1;
+        }
+
         pool.query(
-            `insert into attempted_questions(question_id,user_id,entered_option) 
-              values(?,?,?)`,
+            `insert into attempted_questions(question_id,user_id,entered_option,answer) 
+              values(?,?,?,?)`,
             [
                 data.question_id,
                 data.user_id,
-                data.entered_option
+                data.entered_option,
+                answer
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+    quizAttempted: (id, callBack) => {
+        pool.query(
+            `
+            INSERT INTO attempted_quiz(quiz_id,user_id,score) 
+            VALUES (?,?,(select sum(answer) from attempted_questions where question_id IN (SELECT id FROM quiz_questions WHERE quiz_id = 2)));)`,
+            [
+                quiz_id,
+                user_id
             ],
             (error, results, fields) => {
                 if (error) {
@@ -143,6 +166,30 @@ module.exports = {
         pool.query(
             `select * from quiz_questions where id = ?`,
             [question_id],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results[0]);
+            }
+        );
+    },
+    scoreByQuizId: (id, callBack) => {
+        pool.query(
+            `select score from attempted_quiz where quiz_id = ?`,
+            [id],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results[0]);
+            }
+        );
+    },
+    attemptedQuizByUserId: (id, callBack) => {
+        pool.query(
+            `select quiz_id,score from attempted_quiz where user_id = ?`,
+            [id],
             (error, results, fields) => {
                 if (error) {
                     callBack(error);
