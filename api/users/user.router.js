@@ -9,7 +9,9 @@ const {
     getCategoryByID,
     addQuestion,
     getQuestionByQuizId,
-    userAnswer
+    userAnswer,
+    attemptedQuizByUserId,
+    scoreByQuizId
 } = require("./user.controller");
 
 
@@ -21,7 +23,9 @@ router.get("/category/:id", getCategoryByID);
 router.post("/login", login);
 router.post("/addquestion", addQuestion);
 router.get("/getquestion/:id", getQuestionByQuizId);
-router.post("/useranswer", userAnswer)
+router.post("/useranswer", userAnswer);
+router.get("/quizattemtedbyuser/:id", attemptedQuizByUserId);
+router.get("/quizscore/:id", scoreByQuizId);
 
 
 // router.patch("/", updateUsers);
