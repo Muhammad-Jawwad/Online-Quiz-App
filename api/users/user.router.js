@@ -6,20 +6,28 @@ const {
     login,
     getQuizByCategoryId,
     getCategories,
-    getCategoryByID
+    getCategoryByID,
+    addQuestion,
+    getQuestionByQuizId,
+    userAnswer
 } = require("./user.controller");
 
-// router.get("/", getUsers);
+
 router.post("/register", createUser);
 router.post("/addcategory", createCategory);
 router.get("/category", getCategories);
 router.get("/quizbycategory/:id", getQuizByCategoryId);
 router.get("/category/:id", getCategoryByID);
-// router.get("/:id", getUserByUserId);
 router.post("/login", login);
+router.post("/addquestion", addQuestion);
+router.get("/getquestion/:id", getQuestionByQuizId);
+router.post("/useranswer", userAnswer)
+
+
 // router.patch("/", updateUsers);
 // router.delete("/", deleteUser);
 // router.post("/upload",upload);
 // router.post("/email",sendEmail);
+// router.get("/:id", getUserByUserId);
 
 module.exports = router;
