@@ -8,7 +8,10 @@ const {
   addQuestion,
   getQuestionByQuizId,
   getQuestionById,
-  addInAttempted
+  addInAttempted,
+  quizAttempted,
+  scoreByQuizId,
+  attemptedQuizByUserId
 } = require("./user.service");
 
 
@@ -133,13 +136,26 @@ module.exports = {
         console.log(err);
         return;
       }
+
       if (!results) {
+        console.log("No Question found");
+        quizAttempted(id, (err, results) => {
+          if (err) {
+            console.log(err);
+            return res.status(500).json({
+              success: 0,
+              message: "Database connection error",
+              message: err
+            });
+          }
+        });
         return res.json({
           success: 0,
           message: "Record not Found"
         });
       }
-      results.password = undefined;
+
+      // results.password = undefined;
       return res.json({
         success: 1,
         data: results
@@ -147,6 +163,7 @@ module.exports = {
     });
   },
   userAnswer: (req, res) => {
+    let result = false;
     const body = req.body;
     getQuestionById(body.question_id, (err, results) => {
       if (err) {
@@ -158,14 +175,22 @@ module.exports = {
           data: "Invalid Question Id"
         });
       }
-      // const result = false;
-      console.log(results.correct_option);
-      console.log(body.entered_option);
-      let result = false;
+      console.log(results);
+
       if (results.correct_option == body.entered_option) {
         result = true;
       }
-      console.log(result);
+
+      addInAttempted(body, result, (err, results) => {
+        if (err) {
+          console.log(err);
+          return res.status(500).json({
+            success: 0,
+            message: "Database connection error",
+            message: err
+          });
+        }
+      });
 
       if (result) {
         results.correct_option = undefined;
@@ -185,15 +210,43 @@ module.exports = {
         });
       }
     });
-    addInAttempted(body, (err, results) => {
+  },
+  attemptedQuizByUserId: (req, res) => {
+    const id = req.params.id;
+    attemptedQuizByUserId(id, (err, results) => {
       if (err) {
         console.log(err);
-        return res.status(500).json({
+        return;
+      }
+      if (!results) {
+        return res.json({
           success: 0,
-          message: "Database connection error",
-          message: err
+          message: "Record not Found"
         });
       }
+      return res.json({
+        success: 1,
+        data: results
+      });
+    });
+  },
+  scoreByQuizId: (req, res) => {
+    const id = req.params.id;
+    scoreByQuizId(id, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      if (!results) {
+        return res.json({
+          success: 0,
+          message: "Record not Found"
+        });
+      }
+      return res.json({
+        success: 1,
+        data: results
+      });
     });
   },
   login: (req, res) => {
