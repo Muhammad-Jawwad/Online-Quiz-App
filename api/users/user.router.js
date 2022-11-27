@@ -14,7 +14,7 @@ const {
     scoreByQuizId
 } = require("./user.controller");
 
-
+//Routes
 router.post("/register", createUser);
 router.post("/addcategory", createCategory);
 router.get("/category", getCategories);
@@ -26,12 +26,5 @@ router.get("/getquestion/:id", getQuestionByQuizId);
 router.post("/useranswer", userAnswer);
 router.get("/quizattemtedbyuser/:id", attemptedQuizByUserId);
 router.get("/quizscore/:id", scoreByQuizId);
-
-
-// router.patch("/", updateUsers);
-// router.delete("/", deleteUser);
-// router.post("/upload",upload);
-// router.post("/email",sendEmail);
-// router.get("/:id", getUserByUserId);
 
 module.exports = router;
