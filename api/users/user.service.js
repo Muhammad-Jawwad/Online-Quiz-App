@@ -11,7 +11,7 @@ module.exports = {
                 data.email_id,
                 data.password,
                 data.mobile_number,
-                "https://avatars.dicebear.com/api/identicon/" + data.name + ".svg"
+                ("https://avatars.dicebear.com/api/identicon/" + data.name + ".svg").replace(/\s/g, '')
             ],
             (error, results, fields) => {
                 if (error) {
@@ -85,14 +85,14 @@ module.exports = {
             }
         );
     },
-    quizAttempted: (id, callBack) => {
+    quizAttempted: (quiz_id, callBack) => {
         pool.query(
             `
             INSERT INTO attempted_quiz(quiz_id,user_id,score) 
-            VALUES (?,?,(select sum(answer) from attempted_questions where question_id IN (SELECT id FROM quiz_questions WHERE quiz_id = 2)));)`,
+            VALUES (?,?,(select sum(answer) from attempted_questions where question_id IN 
+            (SELECT id FROM quiz_questions WHERE quiz_id = ?)));)`,
             [
-                quiz_id,
-                user_id
+                quiz_id
             ],
             (error, results, fields) => {
                 if (error) {
