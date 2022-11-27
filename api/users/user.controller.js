@@ -14,7 +14,6 @@ const {
   attemptedQuizByUserId
 } = require("./user.service");
 
-
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 
 const { sign } = require("jsonwebtoken");
@@ -27,14 +26,17 @@ module.exports = {
     create(body, (err, results) => {
       if (err) {
         console.log(err);
-        return res.status(500).json({
-          success: 0,
-          message: "Database connection error",
-          message: err
+        return res.json({
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
-      return res.status(200).json({
-        success: 1,
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Data found",
         data: results
       });
     });
@@ -46,14 +48,17 @@ module.exports = {
       console.log(results);
       if (err) {
         console.log(err);
-        return res.status(500).json({
-          success: 0,
-          message: "Database connection error",
-          message: err
+        return res.json({
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
-      return res.status(200).json({
-        success: 1,
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Data found",
         data: results
       });
     });
@@ -65,7 +70,9 @@ module.exports = {
         return;
       }
       return res.json({
-        success: 1,
+        code: 200,
+        status: true,
+        message: "Data found",
         data: results
       });
     });
@@ -79,13 +86,17 @@ module.exports = {
       }
       if (!results) {
         return res.json({
-          success: 0,
-          message: "Record not Found"
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
       results.password = undefined;
       return res.json({
-        success: 1,
+        code: 200,
+        status: true,
+        message: "Data found",
         data: results
       });
     });
@@ -99,13 +110,17 @@ module.exports = {
       }
       if (!results) {
         return res.json({
-          success: 0,
-          message: "Record not Found"
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
       results.password = undefined;
       return res.json({
-        success: 1,
+        code: 200,
+        status: true,
+        message: "Data found",
         data: results
       });
     });
@@ -117,14 +132,17 @@ module.exports = {
       console.log(results);
       if (err) {
         console.log(err);
-        return res.status(500).json({
-          success: 0,
-          message: "Database connection error",
-          message: err
+        return res.json({
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
-      return res.status(200).json({
-        success: 1,
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Data found",
         data: results
       });
     });
@@ -136,28 +154,33 @@ module.exports = {
         console.log(err);
         return;
       }
-
+      //There is some issue to be resolved!
       if (!results) {
         console.log("No Question found");
         quizAttempted(id, (err, results) => {
           if (err) {
             console.log(err);
-            return res.status(500).json({
-              success: 0,
-              message: "Database connection error",
-              message: err
+            return res.json({
+              code: 400,
+              status: false,
+              message: "Data not found",
+              data: []
             });
           }
         });
         return res.json({
-          success: 0,
-          message: "Record not Found"
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
 
       // results.password = undefined;
       return res.json({
-        success: 1,
+        code: 200,
+        status: true,
+        message: "Data found",
         data: results
       });
     });
@@ -171,8 +194,10 @@ module.exports = {
       }
       if (!results) {
         return res.json({
-          success: 0,
-          data: "Invalid Question Id"
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
       console.log(results);
@@ -184,10 +209,11 @@ module.exports = {
       addInAttempted(body, result, (err, results) => {
         if (err) {
           console.log(err);
-          return res.status(500).json({
-            success: 0,
-            message: "Database connection error",
-            message: err
+          return res.json({
+            code: 400,
+            status: false,
+            message: "Data not found",
+            data: []
           });
         }
       });
@@ -198,15 +224,17 @@ module.exports = {
           expiresIn: "1h"
         });
         return res.json({
-          success: 1,
-          message: "Answer is Correct",
-          token: jsontoken
+          code: 200,
+          status: true,
+          message: "Data found",
+          data: jsontoken
         });
       } else {
         return res.json({
-          success: 0,
-          data: "Answer is Wrong",
-          message: result
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
     });
@@ -220,12 +248,16 @@ module.exports = {
       }
       if (!results) {
         return res.json({
-          success: 0,
-          message: "Record not Found"
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
       return res.json({
-        success: 1,
+        code: 200,
+        status: true,
+        message: "Data found",
         data: results
       });
     });
@@ -239,12 +271,16 @@ module.exports = {
       }
       if (!results) {
         return res.json({
-          success: 0,
-          message: "Record not Found"
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
       return res.json({
-        success: 1,
+        code: 200,
+        status: true,
+        message: "Data found",
         data: results
       });
     });
@@ -257,8 +293,10 @@ module.exports = {
       }
       if (!results) {
         return res.json({
-          success: 0,
-          data: "Invalid email or password"
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
       const result = compareSync(body.password, results.password);
@@ -268,14 +306,18 @@ module.exports = {
           expiresIn: "1h"
         });
         return res.json({
-          success: 1,
-          message: "login successfully",
-          token: jsontoken
+          code: 200,
+          status: true,
+          message: "Data found",
+          // data: jsontoken
+          data: results
         });
       } else {
         return res.json({
-          success: 0,
-          data: "Invalid email or password"
+          code: 400,
+          status: false,
+          message: "Data not found",
+          data: []
         });
       }
     });
