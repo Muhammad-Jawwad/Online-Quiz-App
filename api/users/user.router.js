@@ -11,11 +11,13 @@ const {
     getQuestionByQuizId,
     userAnswer,
     attemptedQuizByUserId,
-    scoreByQuizId
+    scoreByQuizId,
+    updateUsers
 } = require("./user.controller");
 
 //Routes
 router.post("/register", createUser);
+router.patch("/updateuser", updateUsers);
 router.post("/addcategory", createCategory);
 router.get("/category", getCategories);
 router.get("/quizbycategory/:id", getQuizByCategoryId);
