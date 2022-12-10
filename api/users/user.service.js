@@ -21,6 +21,28 @@ module.exports = {
             }
         );
     },
+    updateUser: (data, callBack) => {
+        // console.log(data);
+        pool.query(
+            `update register_table set name=?, email_id=?, password=?, mobile_number=?, profile_picture=? where id = ?`,
+            [
+                data.name,
+                data.email_id,
+                data.password,
+                data.mobile_number,
+                ("https://avatars.dicebear.com/api/identicon/" + data.name + ".svg").replace(/\s/g, ''),
+                data.id
+                // ("https://avatars.dicebear.com/api/identicon/" + data.name + ".svg").replace(/\s/g, '')
+
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
     createCategory: (data, callBack) => {
         console.log(data);
         pool.query(
