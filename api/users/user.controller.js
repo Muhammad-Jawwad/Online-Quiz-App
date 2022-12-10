@@ -11,7 +11,8 @@ const {
   addInAttempted,
   quizAttempted,
   scoreByQuizId,
-  attemptedQuizByUserId
+  attemptedQuizByUserId,
+  updateUser
 } = require("./user.service");
 
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
@@ -29,14 +30,41 @@ module.exports = {
         return res.json({
           code: 400,
           status: false,
-          message: "Data not found",
+          message: "Unable to register user",
           data: []
         });
       }
       return res.json({
         code: 200,
         status: true,
-        message: "Data found",
+        message: "User registered successfully",
+        data: results
+      });
+    });
+  },
+  updateUsers: (req, res) => {
+    const body = req.body;
+    console.log(body);
+    const salt = genSaltSync(10);
+    body.password = hashSync(body.password, salt);
+    updateUser(body, (err, results) => {
+      console.log(results);
+      if (err) {
+        console.log(err);
+        return false;
+      }
+      if (!results) {
+        return res.json({
+          code: 400,
+          status: false,
+          message: "Failed to update user",
+          data: []
+        });
+      }
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Updated successfully",
         data: results
       });
     });
