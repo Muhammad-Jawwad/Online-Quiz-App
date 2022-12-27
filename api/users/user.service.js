@@ -1,3 +1,4 @@
+const { query } = require("express");
 const pool = require("../../config/database");
 
 module.exports = {
@@ -84,12 +85,10 @@ module.exports = {
         );
     },
     addInAttempted: (data, result, callBack) => {
-        console.log(data);
         let answer = 0;
         if (result) {
             answer = 1;
         }
-
         pool.query(
             `insert into attempted_questions(question_id,user_id,entered_option,answer) 
               values(?,?,?,?)`,
@@ -107,14 +106,13 @@ module.exports = {
             }
         );
     },
-    quizAttempted: (quiz_id, callBack) => {
+    quizAttempted: (body, callBack) => {
         pool.query(
-            `
-            INSERT INTO attempted_quiz(quiz_id,user_id,score) 
-            VALUES (?,?,(select sum(answer) from attempted_questions where question_id IN 
-            (SELECT id FROM quiz_questions WHERE quiz_id = ?)));)`,
+            `INSERT INTO attempted_quiz(quiz_id,user_id,score) VALUES (?,?,(select sum(answer) from attempted_questions where question_id IN (SELECT id FROM quiz_questions WHERE quiz_id = ?)));`,
             [
-                quiz_id
+                body.quiz_id,
+                body.user_id,
+                body.quiz_id
             ],
             (error, results, fields) => {
                 if (error) {
@@ -124,14 +122,24 @@ module.exports = {
             }
         );
     },
-    getQuestionByQuizId: (id, callBack) => {
+    getQuestionByQuizId: (body, callBack) => {
+        const quiz_id = body.quiz_id;
+        const user_id = body.user_id;
+        console.log(quiz_id);
+        console.log(user_id);
+
         pool.query(
-            `select question,option_1,option_2,option_3,option_4 from quiz_questions where quiz_id = ? and id NOT IN (SELECT question_id FROM attempted_questions) ORDER BY RAND() LIMIT 1`,
-            [id],
+            // `SELECT id,question,option_1,option_2,option_3,option_4 FROM quiz_questions WHERE quiz_id = ? and id NOT IN (SELECT question_id,user_id FROM attempted_questions WHERE user_id != ?) ORDER BY RAND() LIMIT 1;`
+            `select id,question,option_1,option_2,option_3,option_4 from quiz_questions where quiz_id = ? and (id,?) NOT IN (SELECT question_id,user_id FROM attempted_questions) ORDER BY RAND() LIMIT 1;`,
+            [
+                quiz_id,
+                user_id
+            ],
             (error, results, fields) => {
                 if (error) {
                     callBack(error);
                 }
+                // console.log(query);
                 return callBack(null, results[0]);
             }
         );
@@ -152,6 +160,19 @@ module.exports = {
         pool.query(
             `select id,category_name,category_picture,no_of_quiz from quiz_categories`,
             [],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+    searchCategory: (name, callBack) => {
+        console.log(name);
+        pool.query(
+            `select category_name,category_picture,no_of_quiz from quiz_categories where category_name like ?`,
+            ['%' + name + '%'],
             (error, results, fields) => {
                 if (error) {
                     callBack(error);
@@ -185,6 +206,7 @@ module.exports = {
         );
     },
     getQuestionById: (question_id, callBack) => {
+
         pool.query(
             `select * from quiz_questions where id = ?`,
             [question_id],
@@ -196,15 +218,36 @@ module.exports = {
             }
         );
     },
-    scoreByQuizId: (id, callBack) => {
+    quizStatus: (data, callBack) => {
+        const status = false;
         pool.query(
-            `select score from attempted_quiz where quiz_id = ?`,
-            [id],
+            `insert into quiz_completed(user_id,quiz_id,quiz_status) 
+            values(?,?,?)`,
+            [
+                data.user_id,
+                data.quiz_id,
+                status
+            ],
             (error, results, fields) => {
                 if (error) {
                     callBack(error);
                 }
-                return callBack(null, results[0]);
+                return callBack(null, results);
+            }
+        );
+    },
+    scoreByQuizId: (data, callBack) => {
+        pool.query(
+            `select score from attempted_quiz where (quiz_id,user_id) = (?,?)`,
+            [
+                data.quiz_id,
+                data.user_id
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
             }
         );
     },
@@ -219,5 +262,20 @@ module.exports = {
                 return callBack(null, results[0]);
             }
         );
+    },
+    updateStatus: (data, callBack) => {
+        pool.query(
+            `update quiz_completed set quiz_status = 1 where (quiz_id,user_id) = (?,?)`,
+            [
+                data.quiz_id,
+                data.user_id
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        )
     }
 }
