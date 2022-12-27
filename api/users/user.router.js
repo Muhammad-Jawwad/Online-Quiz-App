@@ -12,21 +12,34 @@ const {
     userAnswer,
     attemptedQuizByUserId,
     scoreByQuizId,
-    updateUsers
+    updateUsers,
+    searchCategory
 } = require("./user.controller");
 
 //Routes
+/**
+ * Post Routes
+ */
 router.post("/register", createUser);
-router.patch("/updateuser", updateUsers);
-router.post("/addcategory", createCategory);
-router.get("/category", getCategories);
-router.get("/quizbycategory/:id", getQuizByCategoryId);
-router.get("/category/:id", getCategoryByID);
 router.post("/login", login);
+router.post("/addcategory", createCategory);
 router.post("/addquestion", addQuestion);
-router.get("/getquestion/:id", getQuestionByQuizId);
 router.post("/useranswer", userAnswer);
-router.get("/quizattemtedbyuser/:id", attemptedQuizByUserId);
-router.get("/quizscore/:id", scoreByQuizId);
+
+/**
+ * Patch Routes
+ */
+router.patch("/updateuser", updateUsers);
+
+/**
+ * Get Routes
+ */
+router.get("/category", getCategories);
+router.get("/categoryById", getCategoryByID);
+router.get("/searchcategory", searchCategory);
+router.get("/quizbycategoryId", getQuizByCategoryId);
+router.get("/getquestion", getQuestionByQuizId);
+router.get("/quizattemtedbyuser", attemptedQuizByUserId);
+router.get("/quizscore", scoreByQuizId);
 
 module.exports = router;
