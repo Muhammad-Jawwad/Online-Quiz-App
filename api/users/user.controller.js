@@ -15,11 +15,13 @@ const {
   scoreByQuizId,
   attemptedQuizByUserId,
   updateUser,
-  searchCategory
+  searchCategory,
+  fetchData
 } = require("./user.service");
 
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
+const XLSX = require('xlsx');
 
 module.exports = {
   createUser: (req, res) => {
@@ -76,6 +78,51 @@ module.exports = {
         message: "Updated successfully",
         data: results
       });
+    });
+  },
+  fetchData: (req, res) => {
+    /**
+     * Body Require:
+     * id as end-point
+     */
+    const id = req.params.id;
+    fetchData(id, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      if (!results) {
+        return res.json({
+          code: 400,
+          status: false,
+          message: "Error fetching data from database",
+          data: []
+        });
+      } else {
+        // Converting Json in to an Array of Object
+        const arr = Object.entries(results).map(([key, Value]) => ({ Key: key, Value }));
+
+        // Checking is the arr is an array 
+        console.log("The object is an array", Array.isArray(arr));
+
+        console.log("There is no error in data fetching", arr);
+
+        // Method for converting in to excel Sheet
+        const convertJsonToExcel = () => {
+          const workbook = XLSX.utils.book_new();
+          const worksheet = XLSX.utils.json_to_sheet(arr);
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+          const excelBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+
+          // Downloading the Excel Sheet 
+          res.setHeader('Content-Disposition', `attachment; filename=${results.name}_Data.xlsx`);
+          res.setHeader('Content-Type', 'application/octet-stream');
+          res.send(excelBuffer);
+        }
+        convertJsonToExcel();
+      }
+
     });
   },
   createCategory: (req, res) => {
