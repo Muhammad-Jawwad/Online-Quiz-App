@@ -44,6 +44,23 @@ module.exports = {
             }
         );
     },
+    fetchData: (user_id, callBack) => {
+        console.log("Calling from service: ", user_id);
+
+        pool.query(
+            `SELECT * FROM register_table WHERE id = ?`,
+            [
+                user_id
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                // console.log(query);
+                return callBack(null, results[0]);
+            }
+        );
+    },
     createCategory: (data, callBack) => {
         console.log(data);
         pool.query(
