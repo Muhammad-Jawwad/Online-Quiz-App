@@ -103,6 +103,8 @@ module.exports = {
     },
     addInAttempted: (data, result, callBack) => {
         let answer = 0;
+
+
         if (result) {
             answer = 1;
         }
