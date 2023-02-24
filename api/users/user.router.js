@@ -14,8 +14,10 @@ const {
     scoreByQuizId,
     updateUsers,
     searchCategory,
-    fetchData
+    fetchData,
+    authenticateToken
 } = require("./user.controller");
+
 
 //Routes
 /**
@@ -32,6 +34,7 @@ router.post("/useranswer", userAnswer);
  */
 router.patch("/updateuser", updateUsers);
 
+
 /**
  * Get Routes
  */
@@ -43,5 +46,6 @@ router.get("/getquestion", getQuestionByQuizId);
 router.get("/quizattemtedbyuser", attemptedQuizByUserId);
 router.get("/quizscore", scoreByQuizId);
 router.get("/fetchData/:id", fetchData);
+
 
 module.exports = router;
