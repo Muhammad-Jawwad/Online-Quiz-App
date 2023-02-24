@@ -19,6 +19,7 @@ const {
   fetchData
 } = require("./user.service");
 
+//Require Modules
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const XLSX = require('xlsx');
