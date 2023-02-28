@@ -101,29 +101,25 @@ module.exports = {
             }
         );
     },
-    addInAttempted: (data, result, callBack) => {
-        let answer = 0;
-
-
-        if (result) {
-            answer = 1;
-        }
-        pool.query(
-            `insert into attempted_questions(question_id,user_id,entered_option,answer) 
-              values(?,?,?,?)`,
+    addInAttempted: (user_id, question_id, quiz_id, entered_option, is_correct, callback) => {
+        const sql = "INSERT INTO attempted_questions (user_id, question_id, quiz_id, entered_option, answer) VALUES (?, ?, ?, ?, ?)";
+        pool.query(sql,
             [
-                data.question_id,
-                data.user_id,
-                data.entered_option,
-                answer
+                user_id,
+                question_id,
+                quiz_id,
+                entered_option,
+                is_correct
             ],
-            (error, results, fields) => {
+            (error, result) => {
                 if (error) {
-                    callBack(error);
+                    console.error(error);
+                    callback(error, null);
+                } else {
+                    console.log("Inserted in the attempted question table.");
+                    callback(null, result);
                 }
-                return callBack(null, results);
-            }
-        );
+            });
     },
     quizAttempted: (body, callBack) => {
         pool.query(
@@ -141,27 +137,23 @@ module.exports = {
             }
         );
     },
-    getQuestionByQuizId: (body, callBack) => {
-        const quiz_id = body.quiz_id;
-        const user_id = body.user_id;
-        console.log(quiz_id);
-        console.log(user_id);
-
-        pool.query(
-            // `SELECT id,question,option_1,option_2,option_3,option_4 FROM quiz_questions WHERE quiz_id = ? and id NOT IN (SELECT question_id,user_id FROM attempted_questions WHERE user_id != ?) ORDER BY RAND() LIMIT 1;`
-            `select id,question,option_1,option_2,option_3,option_4 from quiz_questions where quiz_id = ? and (id,?) NOT IN (SELECT question_id,user_id FROM attempted_questions) ORDER BY RAND() LIMIT 1;`,
+    getQuestionByQuizId: (body, callback) => {
+        const sql = "SELECT * FROM quiz_questions WHERE quiz_id = ? AND id NOT IN (SELECT question_id FROM attempted_questions WHERE user_id = ? AND quiz_id = ?) ORDER BY RAND() LIMIT 1;";
+        pool.query(sql,
             [
-                quiz_id,
-                user_id
+                body.quiz_id,
+                body.user_id,
+                body.quiz_id
             ],
-            (error, results, fields) => {
+            (error, result) => {
                 if (error) {
-                    callBack(error);
+                    console.error(error);
+                    callback(error, null);
+                } else {
+                    console.log("Next question found:", result[0]);
+                    callback(null, result[0]);
                 }
-                // console.log(query);
-                return callBack(null, results[0]);
-            }
-        );
+            });
     },
     getCategoryByID: (id, callBack) => {
         pool.query(
@@ -282,19 +274,41 @@ module.exports = {
             }
         );
     },
-    updateStatus: (data, callBack) => {
-        pool.query(
-            `update quiz_completed set quiz_status = 1 where (quiz_id,user_id) = (?,?)`,
+    updateStatus: (user_id, quiz_id, callback) => {
+        const sql = "UPDATE quiz_completed SET quiz_status = 1 WHERE user_id = ? AND quiz_id = ?";
+        pool.query(sql,
             [
-                data.quiz_id,
-                data.user_id
+                user_id,
+                quiz_id
             ],
-            (error, results, fields) => {
+            (error, result) => {
                 if (error) {
-                    callBack(error);
+                    console.error(error);
+                    callback(error, null);
+                } else {
+                    console.log("Quiz status updated in the quiz_completed table.");
+                    callback(null, result);
                 }
-                return callBack(null, results);
+            });
+    },
+    checkAnswer: (question_id, entered_option, callBack) => {
+        const sql = `SELECT count(id) as count FROM quiz_questions WHERE id = ? AND correct_option = ? ;`;
+        pool.query(
+            sql,
+            [
+                question_id,
+                entered_option
+            ],
+            (err, results) => {
+                if (err) {
+                    console.log(err);
+                }
+                else {
+                    let r = results[0].count;
+                    console.log("From db ", r);
+                    callBack(null,r);
+                }
             }
-        )
-    }
+        );
+    }  
 }
