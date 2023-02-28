@@ -14,8 +14,7 @@ const {
     scoreByQuizId,
     updateUsers,
     searchCategory,
-    fetchData,
-    authenticateToken
+    fetchData
 } = require("./user.controller");
 
 
