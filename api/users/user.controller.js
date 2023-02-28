@@ -16,10 +16,11 @@ const {
   attemptedQuizByUserId,
   updateUser,
   searchCategory,
-  fetchData
+  fetchData,
+  checkAnswer,
+  // randomQues
 } = require("./user.service");
 
-//Require Modules
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const XLSX = require('xlsx');
@@ -432,118 +433,97 @@ module.exports = {
      * Question id
      * Entered option
      */
+
+    // Getting the params
     const body = req.body;
-    var check = false;
+    const user_id = body.user_id;
+    const quiz_id = body.quiz_id;
+    const question_id = body.question_id;
+    const entered_option = body.entered_option;
+
+    // Intializing flags
     var msg = "Sorry! Your answer is incorrect!";
-    getQuestionById(body.question_id, (err, results) => {
+    var check = 0;
+
+    // Checking the answered question 
+    checkAnswer(question_id, entered_option, (err, results) => {
       if (err) {
         console.log(err);
         return;
       }
-      console.log(!results);
-      if (!results) {
-        return res.json({
-          code: 400,
-          status: false,
-          message: "Question you want to answer not found",
-          data: []
-        });
+      else {
+        console.log("The previous question that answered: ", results);
+        //Checking answer
+        if (results == 1) {
+          check = 1;
+          msg = "Congratulations! Your answer is correct"
+          console.log("Answer Status", msg);
+        }
       }
-      console.log("The previous question that answered: ", results);
-      //Checking answer
-      if (results.correct_option == body.entered_option) {
-        check = true;
-        msg = "Congratulations! Your answer is correct"
-        console.log("Answer Status", check);
-      }
-      //Adding the question into attempted question
-      addInAttempted(body, check, (err, results) => {
+
+      // Adding in question attempted 
+      addInAttempted(user_id, question_id, quiz_id, entered_option, check, (err) => {
         if (err) {
           console.log(err);
-          return res.json({
-            code: 400,
-            status: false,
-            message: "Data not added to attempted question table",
-            data: []
-          });
         }
       });
       console.log("The question added in attempted question")
-    });
-    //Calling next question
-    getQuestionByQuizId(body, (err, next_results) => {
-      if (err) {
-        console.log("Next Question finding error: ", err);
-        return;
-      }
-      console.log(!next_results);
-      if (!next_results) {
-        console.log("No Question found");
-        //When there is no question left in quiz we need to calculate it's score
-        quizAttempted(body, (err, results) => {
-          if (err) {
-            console.log(err);
-            return;
-          }
-          console.log("From quizAttempted fun: ", !results);
-          if (!results) {
-            return res.json({
-              code: 400,
-              status: false,
-              message: msg,
-              data: "Score not calculated"
-            });
-          }
-          // Now getting the calculated score from quiz_attempted
-          scoreByQuizId(body, (err, results) => {
+
+      //Calling next question
+      getQuestionByQuizId(body, (err, next_results) => {
+        if (err) {
+          console.log("Next Question finding error: ", err);
+          return;
+        }
+        console.log(!next_results);
+        if (!next_results) {
+          console.log("No Question found");
+          //When there is no question left in quiz we need to calculate it's score
+          quizAttempted(body, (err, results) => {
             if (err) {
               console.log(err);
               return;
             }
-            console.log("From scoreByQuizId fun: ", !results);
-            if (!results) {
-              return res.json({
-                code: 400,
-                status: false,
-                message: msg,
-                data: "Score not found"
-              });
-            }
-            //update status in quiz completed table
-            updateStatus(body, (err, results) => {
+            console.log("From quizAttempted fun: ", !results);
+
+
+            // Now getting the calculated score from quiz_attempted
+            scoreByQuizId(body, (err, results) => {
               if (err) {
                 console.log(err);
                 return;
               }
-              console.log("From updateStatus fun: ", !results);
-              if (!results) {
-                return res.json({
-                  code: 400,
-                  status: false,
-                  message: msg,
-                  data: "Status not Updated"
-                });
-              }
-            });
-            return res.json({
-              code: 200,
-              status: true,
-              message: msg,
-              data: "The quiz is ended",
-              score: results
+              console.log("From scoreByQuizId fun: ", !results);
+
+              //update status in quiz completed table
+              updateStatus(user_id, quiz_id, (err, results) => {
+                if (err) {
+                  console.log(err);
+                  return;
+                }
+                console.log("From updateStatus fun: ", !results);
+              });
+
+              return res.json({
+                code: 200,
+                status: true,
+                message: msg,
+                data: "The quiz is ended",
+                score: results
+              });
             });
           });
-        });
-      }
-      else {
-        console.log("The next question after answer", next_results);
-        return res.json({
-          code: 200,
-          status: true,
-          message: msg,
-          data: next_results
-        });
-      }
+        }
+        else {
+          console.log("The next question after answer", next_results);
+          return res.json({
+            code: 200,
+            status: true,
+            message: msg,
+            data: next_results
+          });
+        }
+      });
     });
   }
 }
