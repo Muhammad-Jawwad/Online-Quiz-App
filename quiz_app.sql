@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 01, 2023 at 11:22 AM
--- Server version: 10.4.25-MariaDB
--- PHP Version: 8.1.10
+-- Generation Time: Mar 14, 2023 at 09:38 PM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -36,7 +36,22 @@ CREATE TABLE `attempted_questions` (
   `answer` binary(1) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `attempted_questions`
+--
+
+INSERT INTO `attempted_questions` (`id`, `user_id`, `quiz_id`, `question_id`, `entered_option`, `answer`, `created_at`, `updated_at`) VALUES
+(1, 1, 2, 1, 'All of above', 0x31, '2023-03-14 13:25:58', '2023-03-14 13:25:58'),
+(2, 1, 2, 2, 'Ethical Programming', 0x30, '2023-03-14 13:31:30', '2023-03-14 13:31:30'),
+(3, 1, 2, 3, 'Both 1 and 2', 0x31, '2023-03-14 13:32:18', '2023-03-14 13:32:18'),
+(4, 3, 2, 1, 'All of above', 0x31, '2023-03-14 13:37:21', '2023-03-14 13:37:21'),
+(5, 3, 2, 3, 'Both 1 and ', 0x30, '2023-03-14 13:38:52', '2023-03-14 13:38:52'),
+(6, 3, 2, 2, 'Competitive Programming', 0x30, '2023-03-14 13:39:18', '2023-03-14 13:39:18'),
+(7, 7, 2, 3, 'Both 1 and 2', 0x31, '2023-03-14 14:43:37', '2023-03-14 14:43:37'),
+(8, 7, 2, 1, 'Inhertence', 0x30, '2023-03-14 14:44:14', '2023-03-14 14:44:14'),
+(9, 7, 2, 2, 'Object Oriented Programming', 0x31, '2023-03-14 14:44:51', '2023-03-14 14:44:51');
 
 -- --------------------------------------------------------
 
@@ -51,7 +66,16 @@ CREATE TABLE `attempted_quiz` (
   `score` int(11) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `attempted_quiz`
+--
+
+INSERT INTO `attempted_quiz` (`id`, `user_id`, `quiz_id`, `score`, `created_at`, `updated_at`) VALUES
+(1, 1, 2, 2, '2023-03-14 13:35:22', '2023-03-14 13:35:22'),
+(2, 3, 2, 3, '2023-03-14 13:39:43', '2023-03-14 13:39:43'),
+(3, 7, 2, 2, '2023-03-14 14:44:56', '2023-03-14 14:44:56');
 
 -- --------------------------------------------------------
 
@@ -70,7 +94,7 @@ CREATE TABLE `quiz_by_category` (
   `status` binary(1) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `quiz_by_category`
@@ -93,7 +117,7 @@ CREATE TABLE `quiz_categories` (
   `no_of_quiz` int(225) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `quiz_categories`
@@ -124,32 +148,16 @@ CREATE TABLE `quiz_completed` (
   `quiz_status` tinyint(1) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `quiz_completed`
 --
 
 INSERT INTO `quiz_completed` (`id`, `user_id`, `quiz_id`, `quiz_status`, `created_at`, `updated_at`) VALUES
-(1, 1, 2, 0, '2023-02-25 11:57:00', '2023-02-25 11:57:00'),
-(2, 1, 2, 0, '2023-02-25 12:06:06', '2023-02-25 12:06:06'),
-(3, 1, 2, 0, '2023-02-25 12:06:09', '2023-02-25 12:06:09'),
-(4, 1, 2, 0, '2023-02-25 12:06:10', '2023-02-25 12:06:10'),
-(5, 1, 2, 0, '2023-02-25 12:06:12', '2023-02-25 12:06:12'),
-(6, 1, 2, 0, '2023-02-25 12:06:13', '2023-02-25 12:06:13'),
-(7, 1, 2, 0, '2023-02-25 12:06:14', '2023-02-25 12:06:14'),
-(8, 1, 2, 0, '2023-02-25 12:06:14', '2023-02-25 12:06:14'),
-(9, 1, 2, 0, '2023-02-25 12:06:15', '2023-02-25 12:06:15'),
-(10, 1, 2, 0, '2023-02-25 12:06:16', '2023-02-25 12:06:16'),
-(11, 1, 2, 0, '2023-02-25 12:06:17', '2023-02-25 12:06:17'),
-(12, 1, 2, 0, '2023-02-25 12:06:18', '2023-02-25 12:06:18'),
-(13, 1, 2, 0, '2023-02-25 12:06:19', '2023-02-25 12:06:19'),
-(14, 1, 2, 0, '2023-02-25 12:06:19', '2023-02-25 12:06:19'),
-(15, 6, 2, 1, '2023-02-25 12:06:26', '2023-02-25 12:06:26'),
-(16, 6, 2, 1, '2023-02-25 12:06:28', '2023-02-25 12:06:28'),
-(17, 6, 2, 1, '2023-02-25 12:06:28', '2023-02-25 12:06:28'),
-(18, 6, 2, 1, '2023-02-25 12:06:29', '2023-02-25 12:06:29'),
-(19, 6, 2, 1, '2023-02-25 12:06:30', '2023-02-25 12:06:30');
+(1, 1, 2, 1, '2023-03-14 13:20:57', '2023-03-14 13:20:57'),
+(2, 3, 2, 1, '2023-03-14 13:36:25', '2023-03-14 13:36:25'),
+(3, 7, 2, 1, '2023-03-14 14:42:48', '2023-03-14 14:42:48');
 
 -- --------------------------------------------------------
 
@@ -169,7 +177,7 @@ CREATE TABLE `quiz_questions` (
   `status` binary(1) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `quiz_questions`
@@ -197,7 +205,7 @@ CREATE TABLE `register_table` (
   `profile_picture` varchar(225) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `register_table`
@@ -276,13 +284,13 @@ ALTER TABLE `register_table`
 -- AUTO_INCREMENT for table `attempted_questions`
 --
 ALTER TABLE `attempted_questions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `attempted_quiz`
 --
 ALTER TABLE `attempted_quiz`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `quiz_by_category`
@@ -300,7 +308,7 @@ ALTER TABLE `quiz_categories`
 -- AUTO_INCREMENT for table `quiz_completed`
 --
 ALTER TABLE `quiz_completed`
-  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(5) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `quiz_questions`
