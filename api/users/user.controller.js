@@ -17,8 +17,7 @@ const {
   updateUser,
   searchCategory,
   fetchData,
-  checkAnswer,
-  // randomQues
+  checkAnswer
 } = require("./user.service");
 
 const { hashSync, genSaltSync, compareSync } = require("bcrypt");
@@ -280,58 +279,6 @@ module.exports = {
       });
     });
   },
-  getQuestionByQuizId: (req, res) => {
-    /**
-     * Body requires:
-     * user_id
-     * quiz_id
-     */
-    const body = req.body;
-    // console.log(id);
-    getQuestionByQuizId(body, (err, results) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      console.log(!results);
-      if (!results) {
-        console.log("No Question found");
-        return res.json({
-          code: 400,
-          status: false,
-          message: "First Question not found",
-          data: []
-        });
-      }
-      else {
-        console.log("This is from get question", results)
-        quizStatus(body, (err, result) => {
-          //One user can start the same quiz again
-          if (err) {
-            console.log(err);
-            return;
-          }
-          console.log("The result at quiz status is: ", result);
-          if (!result) {
-            console.log("Unable to insert in quiz completed");
-            return res.json({
-              code: 400,
-              status: false,
-              message: "Unable to insert in quiz completed",
-              data: []
-            });
-          }
-          console.log("Inserted in quiz_complete")
-        });
-        return res.json({
-          code: 200,
-          status: true,
-          message: "First question found",
-          data: results
-        });
-      }
-    });
-  },
   attemptedQuizByUserId: (req, res) => {
     /**
      * Body Require:
@@ -425,6 +372,61 @@ module.exports = {
       }
     });
   },
+  //For Questions in Quiz App
+  getQuestionByQuizId: (req, res) => {
+    /**
+     * Body requires:
+     * user_id
+     * quiz_id
+     */
+    const body = req.body;
+    // console.log(id);
+    getQuestionByQuizId(body, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.log(!results);
+      if (!results) {
+        console.log("No Question found");
+        return res.json({
+          code: 400,
+          status: false,
+          message: "First Question not found",
+          data: []
+        });
+      }
+      else {
+        console.log("This is from get question", results)
+        // Inserting the status = 0 in the quiz_completed to indicate the start of quiz
+        quizStatus(body, (err, result) => {
+          //One user can start the same quiz again
+          if (err) {
+            console.log(err);
+            return;
+          }
+          console.log("The result at quiz status is: ", result);
+          if (!result) {
+            console.log("Unable to insert in quiz completed");
+            return res.json({
+              code: 400,
+              status: false,
+              message: "Unable to insert in quiz completed",
+              data: []
+            });
+          }
+          console.log("Inserted in quiz_complete")
+        });
+        return res.json({
+          code: 200,
+          status: true,
+          message: "First question found",
+          data: results
+        });
+      }
+    });
+  },
+  
   userAnswer: (req, res) => {
     /**
      * Body requires:
@@ -460,7 +462,6 @@ module.exports = {
           console.log("Answer Status", msg);
         }
       }
-
       // Adding in question attempted 
       addInAttempted(user_id, question_id, quiz_id, entered_option, check, (err) => {
         if (err) {
@@ -468,62 +469,75 @@ module.exports = {
         }
       });
       console.log("The question added in attempted question")
+      return res.json({
+        code: 200,
+        status: true,
+        message: msg,
+      });
+    });
+  },
+  getNextQuestion:  (req, res) => {
+    /**
+     * Body requires:
+     * user_id
+     * quiz_id
+     */
+    const body = req.body;
+    const user_id = body.user_id;
+    const quiz_id = body.quiz_id;
 
-      //Calling next question
-      getQuestionByQuizId(body, (err, next_results) => {
-        if (err) {
-          console.log("Next Question finding error: ", err);
-          return;
-        }
-        console.log(!next_results);
-        if (!next_results) {
-          console.log("No Question found");
-          //When there is no question left in quiz we need to calculate it's score
-          quizAttempted(body, (err, results) => {
+    getQuestionByQuizId(body, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      console.log(!results);
+      if (!results) {
+        console.log("Next Question not found");
+        //When there is no question left in quiz we need to calculate it's score
+        quizAttempted(body, (err, results) => {
+          if (err) {
+            console.log(err);
+            return;
+          }
+          console.log("From quizAttempted fun: ", !results);
+
+          // Now getting the calculated score from quiz_attempted
+          scoreByQuizId(body, (err, results) => {
             if (err) {
               console.log(err);
               return;
             }
-            console.log("From quizAttempted fun: ", !results);
+            console.log("From scoreByQuizId fun: ", !results);
 
-
-            // Now getting the calculated score from quiz_attempted
-            scoreByQuizId(body, (err, results) => {
+            //update status in quiz completed table
+            updateStatus(user_id, quiz_id, (err, results) => {
               if (err) {
                 console.log(err);
                 return;
               }
-              console.log("From scoreByQuizId fun: ", !results);
-
-              //update status in quiz completed table
-              updateStatus(user_id, quiz_id, (err, results) => {
-                if (err) {
-                  console.log(err);
-                  return;
-                }
-                console.log("From updateStatus fun: ", !results);
-              });
-
-              return res.json({
-                code: 200,
-                status: true,
-                message: msg,
-                data: "The quiz is ended",
-                score: results
-              });
+              console.log("From updateStatus fun: ", !results);
+            });
+            return res.json({
+              code: 200,
+              status: true,
+              message: "The quiz is ended",
+              score: results
             });
           });
-        }
-        else {
-          console.log("The next question after answer", next_results);
+        });
+        
+      }
+      else {
+        console.log("The next question after answer", results);
           return res.json({
             code: 200,
             status: true,
-            message: msg,
-            data: next_results
+            message: "This is the next question",
+            data: results
           });
-        }
-      });
+      }
     });
   }
 }
+
