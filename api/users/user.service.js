@@ -100,61 +100,7 @@ module.exports = {
                 return callBack(null, results);
             }
         );
-    },
-    addInAttempted: (user_id, question_id, quiz_id, entered_option, is_correct, callback) => {
-        const sql = "INSERT INTO attempted_questions (user_id, question_id, quiz_id, entered_option, answer) VALUES (?, ?, ?, ?, ?)";
-        pool.query(sql,
-            [
-                user_id,
-                question_id,
-                quiz_id,
-                entered_option,
-                is_correct
-            ],
-            (error, result) => {
-                if (error) {
-                    console.error(error);
-                    callback(error, null);
-                } else {
-                    console.log("Inserted in the attempted question table.");
-                    callback(null, result);
-                }
-            });
-    },
-    quizAttempted: (body, callBack) => {
-        pool.query(
-            `INSERT INTO attempted_quiz(quiz_id,user_id,score) VALUES (?,?,(select sum(answer) from attempted_questions where question_id IN (SELECT id FROM quiz_questions WHERE quiz_id = ?)));`,
-            [
-                body.quiz_id,
-                body.user_id,
-                body.quiz_id
-            ],
-            (error, results, fields) => {
-                if (error) {
-                    callBack(error);
-                }
-                return callBack(null, results);
-            }
-        );
-    },
-    getQuestionByQuizId: (body, callback) => {
-        const sql = "SELECT * FROM quiz_questions WHERE quiz_id = ? AND id NOT IN (SELECT question_id FROM attempted_questions WHERE user_id = ? AND quiz_id = ?) ORDER BY RAND() LIMIT 1;";
-        pool.query(sql,
-            [
-                body.quiz_id,
-                body.user_id,
-                body.quiz_id
-            ],
-            (error, result) => {
-                if (error) {
-                    console.error(error);
-                    callback(error, null);
-                } else {
-                    console.log("Next question found:", result[0]);
-                    callback(null, result[0]);
-                }
-            });
-    },
+    },   
     getCategoryByID: (id, callBack) => {
         pool.query(
             `select id,category_name,category_picture,no_of_quiz from quiz_categories where id = ?`,
@@ -229,6 +175,19 @@ module.exports = {
             }
         );
     },
+    attemptedQuizByUserId: (id, callBack) => {
+        pool.query(
+            `select quiz_id,score from attempted_quiz where user_id = ?`,
+            [id],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results[0]);
+            }
+        );
+    },
+    //For Questions
     quizStatus: (data, callBack) => {
         const status = false;
         pool.query(
@@ -247,6 +206,23 @@ module.exports = {
             }
         );
     },
+    updateStatus: (user_id, quiz_id, callback) => {
+        const sql = "UPDATE quiz_completed SET quiz_status = 1 WHERE user_id = ? AND quiz_id = ?";
+        pool.query(sql,
+            [
+                user_id,
+                quiz_id
+            ],
+            (error, result) => {
+                if (error) {
+                    console.error(error);
+                    callback(error, null);
+                } else {
+                    console.log("Quiz status updated in the quiz_completed table.");
+                    callback(null, result);
+                }
+            });
+    },
     scoreByQuizId: (data, callBack) => {
         pool.query(
             `select score from attempted_quiz where (quiz_id,user_id) = (?,?)`,
@@ -262,31 +238,57 @@ module.exports = {
             }
         );
     },
-    attemptedQuizByUserId: (id, callBack) => {
+    quizAttempted: (body, callBack) => {
         pool.query(
-            `select quiz_id,score from attempted_quiz where user_id = ?`,
-            [id],
+            `INSERT INTO attempted_quiz(quiz_id,user_id,score) VALUES (?,?,(select sum(answer) from attempted_questions where user_id = ? and question_id IN (SELECT id FROM quiz_questions WHERE quiz_id = ?)));`,
+            [
+                body.quiz_id,
+                body.user_id,
+                body.user_id,
+                body.quiz_id
+            ],
             (error, results, fields) => {
                 if (error) {
                     callBack(error);
                 }
-                return callBack(null, results[0]);
+                return callBack(null, results);
             }
         );
     },
-    updateStatus: (user_id, quiz_id, callback) => {
-        const sql = "UPDATE quiz_completed SET quiz_status = 1 WHERE user_id = ? AND quiz_id = ?";
+    getQuestionByQuizId: (body, callback) => {
+        const sql = "SELECT * FROM quiz_questions WHERE quiz_id = ? AND id NOT IN (SELECT question_id FROM attempted_questions WHERE user_id = ? AND quiz_id = ?) ORDER BY RAND() LIMIT 1;";
         pool.query(sql,
             [
-                user_id,
-                quiz_id
+                body.quiz_id,
+                body.user_id,
+                body.quiz_id
             ],
             (error, result) => {
                 if (error) {
                     console.error(error);
                     callback(error, null);
                 } else {
-                    console.log("Quiz status updated in the quiz_completed table.");
+                    console.log("Next question found:", result[0]);
+                    callback(null, result[0]);
+                }
+            });
+    },
+    addInAttempted: (user_id, question_id, quiz_id, entered_option, is_correct, callback) => {
+        const sql = "INSERT INTO attempted_questions (user_id, question_id, quiz_id, entered_option, answer) VALUES (?, ?, ?, ?, ?)";
+        pool.query(sql,
+            [
+                user_id,
+                question_id,
+                quiz_id,
+                entered_option,
+                is_correct
+            ],
+            (error, result) => {
+                if (error) {
+                    console.error(error);
+                    callback(error, null);
+                } else {
+                    console.log("Inserted in the attempted question table.");
                     callback(null, result);
                 }
             });
