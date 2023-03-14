@@ -14,7 +14,8 @@ const {
     scoreByQuizId,
     updateUsers,
     searchCategory,
-    fetchData
+    fetchData,
+    getNextQuestion
 } = require("./user.controller");
 
 
@@ -26,7 +27,7 @@ router.post("/register", createUser);
 router.post("/login", login);
 router.post("/addcategory", createCategory);
 router.post("/addquestion", addQuestion);
-router.post("/useranswer", userAnswer);
+
 
 /**
  * Patch Routes
@@ -41,10 +42,15 @@ router.get("/category", getCategories);
 router.get("/categoryById", getCategoryByID);
 router.get("/searchcategory", searchCategory);
 router.get("/quizbycategoryId", getQuizByCategoryId);
-router.get("/getquestion", getQuestionByQuizId);
+
 router.get("/quizattemtedbyuser", attemptedQuizByUserId);
 router.get("/quizscore", scoreByQuizId);
 router.get("/fetchData/:id", fetchData);
 
+
+//For Questions in Quiz App
+router.get("/getquestion", getQuestionByQuizId);
+router.post("/useranswer", userAnswer);
+router.get("/nextquestion", getNextQuestion);
 
 module.exports = router;
