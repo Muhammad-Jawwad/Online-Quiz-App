@@ -32,9 +32,7 @@ module.exports = {
                 data.password,
                 data.mobile_number,
                 ("https://avatars.dicebear.com/api/identicon/" + data.name + ".svg").replace(/\s/g, ''),
-                data.id
-                // ("https://avatars.dicebear.com/api/identicon/" + data.name + ".svg").replace(/\s/g, '')
-
+                data.user_id
             ],
             (error, results, fields) => {
                 if (error) {
