@@ -42,7 +42,6 @@ router.get("/category", getCategories);
 router.get("/categoryById", getCategoryByID);
 router.get("/searchcategory", searchCategory);
 router.get("/quizbycategoryId", getQuizByCategoryId);
-
 router.get("/quizattemtedbyuser", attemptedQuizByUserId);
 router.get("/quizscore", scoreByQuizId);
 router.get("/fetchData/:id", fetchData);
