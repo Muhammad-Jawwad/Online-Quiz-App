@@ -55,6 +55,14 @@ module.exports = {
     });
   },
   updateUsers: (req, res) => {
+    /**
+    Body Require:
+     * user_id
+     * mobile_number
+     * password
+     * email_id
+     * name
+     */
     const body = req.body;
     console.log(body);
     const salt = genSaltSync(10);
@@ -65,7 +73,8 @@ module.exports = {
         console.log(err);
         return false;
       }
-      if (!results.length) {
+      if (!results) {
+        console.log("User details are not updating")
         return res.json({
           code: 400,
           status: false,
@@ -73,12 +82,15 @@ module.exports = {
           data: []
         });
       }
-      return res.json({
-        code: 200,
-        status: true,
-        message: "Updated successfully",
-        data: results
-      });
+      else{
+        console.log("User details are updating");
+        return res.json({
+          code: 200,
+          status: true,
+          message: "Updated successfully",
+          data: results
+        });
+      }
     });
   },
   fetchData: (req, res) => {
@@ -258,6 +270,16 @@ module.exports = {
     });
   },
   addQuestion: (req, res) => {
+    /**
+     Body Require:
+     * quiz_id
+     * question
+     * option_1
+     * option_2
+     * option_3
+     * option_4
+     * correct_option
+     */
     const body = req.body;
     console.log(req, "No error occur");
     addQuestion(body, (err, results) => {
@@ -285,12 +307,14 @@ module.exports = {
      * User id
      */
     const body = req.body;
+    console.log(body);
     attemptedQuizByUserId(body.user_id, (err, results) => {
       if (err) {
         console.log(err);
         return;
       }
       if (!results) {
+        console.log("No result found")
         return res.json({
           code: 400,
           status: false,
@@ -298,12 +322,15 @@ module.exports = {
           data: []
         });
       }
-      return res.json({
-        code: 200,
-        status: true,
-        message: "Data found",
-        data: results
-      });
+      else{
+        console.log("result found");
+        return res.json({
+          code: 200,
+          status: true,
+          message: "Data found",
+          data: results
+        });
+      }
     });
   },
   scoreByQuizId: (req, res) => {
@@ -540,4 +567,3 @@ module.exports = {
     });
   }
 }
-
