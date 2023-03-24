@@ -2,37 +2,57 @@ const router = require("express").Router();
 
 const {
     createAdmin,
-    createCategory,
     login,
-    addQuestion,
-    updateUsers,
-    getCategories,
-    searchCategory
+    updateAdmin,
+
+    getCategory,
+    createCategory,
+    updateCategory,
+    searchCategory,
+
+    getQuiz,
+    createQuiz,
+    updateQuiz,
+
+    createQuestion,
+    getQuestion,
+    updateQuestion
+
 } = require("./admin.controller");
 
 
 //Routes
 /**
- * Post Routes
+ * Admin Register and login
  */
 router.post("/register", createAdmin);
 router.post("/login", login);
+router.patch("/updateadmin", updateAdmin);
+
+
+/**
+ * Catagory Routes
+ */
 router.post("/addcategory", createCategory);
-router.post("/addquestion", addQuestion);
+router.get("/getcategory", getCategory);
+router.patch("/updatecategory", updateCategory);
+
+router.get("/searchcatagory", searchCategory)
 
 
 /**
- * Patch Routes
+ * Quiz Routes
  */
-router.patch("/updateuser", updateUsers);
-
+router.post("/addquiz", createQuiz);
+router.get("/getquiz", getQuiz);
+router.patch("/updatequiz", updateQuiz);
 
 /**
- * Get Routes
+ * Question Routes
  */
-router.get("/category", getCategories);
-router.get("/searchcategory", searchCategory);
-
+router.post("/addquestion", createQuestion);
+router.get("/getquestion", getQuestion);
+router.patch("/updatequestion", updateQuestion);
 
 
 module.exports = router;
