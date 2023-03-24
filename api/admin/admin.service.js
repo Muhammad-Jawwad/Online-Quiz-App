@@ -2,7 +2,10 @@ const { query } = require("express");
 const pool = require("../../config/database");
 
 module.exports = {
-    create: (data, callBack) => {
+    /**
+     * Admin Register and login
+    */
+    createAdmin: (data, callBack) => {
         console.log(data);
         pool.query(
             `insert into register_table(name, email_id, password, mobile_number, profile_picture) 
@@ -22,7 +25,19 @@ module.exports = {
             }
         );
     },
-    updateUser: (data, callBack) => {
+    getAdminByAdminEmail: (email, callBack) => {
+        pool.query(
+            `select * from register_table where email_id = ?`,
+            [email],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results[0]);
+            }
+        );
+    },
+    updateAdmin: (data, callBack) => {
         // console.log(data);
         pool.query(
             `update register_table set name=?, email_id=?, password=?, mobile_number=?, profile_picture=? where id = ?`,
@@ -42,20 +57,18 @@ module.exports = {
             }
         );
     },
-    fetchData: (user_id, callBack) => {
-        console.log("Calling from service: ", user_id);
-
+    /**
+     * Catagory CRUD
+     */
+    getCategory: callBack => {
         pool.query(
-            `SELECT * FROM register_table WHERE id = ?`,
-            [
-                user_id
-            ],
+            `select id,category_name,category_picture,no_of_quiz from quiz_categories`,
+            [],
             (error, results, fields) => {
                 if (error) {
                     callBack(error);
                 }
-                // console.log(query);
-                return callBack(null, results[0]);
+                return callBack(null, results);
             }
         );
     },
@@ -77,8 +90,41 @@ module.exports = {
             }
         );
     },
-    addQuestion: (data, callBack) => {
-        console.log(data);
+    updateCategory: () => {
+
+    },
+    searchCategory: (name, callBack) => {
+        console.log(name);
+        pool.query(
+            `select category_name,category_picture,no_of_quiz from quiz_categories where category_name like ?`,
+            ['%' + name + '%'],
+            (error, results, fields) => {
+                if (error) {
+                    callBack(error);
+                }
+                return callBack(null, results);
+            }
+        );
+    },
+
+     /**
+     * Quiz CRUD
+     */
+     createQuiz: () => {
+
+     },
+     getQuiz: () => {
+   
+     },
+     updateQuiz: () => {
+   
+     },
+
+    /**
+     * Question CRUD
+     */
+    createQuestion: (data, callBack) => {
+    console.log(data);
         pool.query(
             `insert into quiz_questions(quiz_id,question,option_1,option_2,option_3,option_4,correct_option) 
               values(?,?,?,?,?,?,?)`,
@@ -98,57 +144,8 @@ module.exports = {
                 return callBack(null, results);
             }
         );
-    },   
-    getCategories: callBack => {
-        pool.query(
-            `select id,category_name,category_picture,no_of_quiz from quiz_categories`,
-            [],
-            (error, results, fields) => {
-                if (error) {
-                    callBack(error);
-                }
-                return callBack(null, results);
-            }
-        );
-    },
-    searchCategory: (name, callBack) => {
-        console.log(name);
-        pool.query(
-            `select category_name,category_picture,no_of_quiz from quiz_categories where category_name like ?`,
-            ['%' + name + '%'],
-            (error, results, fields) => {
-                if (error) {
-                    callBack(error);
-                }
-                return callBack(null, results);
-            }
-        );
-    },
-    getQuizByCategoryId: (id, callBack) => {
-        pool.query(
-            `select quiz_no,picture,quiz_name,no_of_questions,description from quiz_by_category where category_id = ?`,
-            [id],
-            (error, results, fields) => {
-                if (error) {
-                    callBack(error);
-                }
-                return callBack(null, results[0]);
-            }
-        );
-    },
-    getUserByUserEmail: (email, callBack) => {
-        pool.query(
-            `select * from register_table where email_id = ?`,
-            [email],
-            (error, results, fields) => {
-                if (error) {
-                    callBack(error);
-                }
-                return callBack(null, results[0]);
-            }
-        );
-    },
-    getQuestionById: (question_id, callBack) => {
+    },  
+    getQuestion: (question_id, callBack) => {
 
         pool.query(
             `select * from quiz_questions where id = ?`,
@@ -161,16 +158,7 @@ module.exports = {
             }
         );
     },
-    attemptedQuizByUserId: (id, callBack) => {
-        pool.query(
-            `select quiz_id,score from attempted_quiz where user_id = ?`,
-            [id],
-            (error, results, fields) => {
-                if (error) {
-                    callBack(error);
-                }
-                return callBack(null, results[0]);
-            }
-        );
+    updateQuestion: () => {
+
     }
 }
