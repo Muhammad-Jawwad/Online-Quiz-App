@@ -1,20 +1,25 @@
 const {
+  getRegisteredStudents,
+  getStudentById,
   createAdmin,
   // login
   getAdminByAdminEmail,
   updateAdmin,
 
   getCategory,
+  getCategoryById,
   createCategory,
   updateCategory,
   searchCategory,
 
   getQuiz,
+  getQuizById,
   createQuiz,
   updateQuiz,
 
   createQuestion,
   getQuestion,
+  getQuestionById,
   updateQuestion
    
   } = require("./admin.service");
@@ -27,14 +32,46 @@ const {
   /**
   * Admin Register and login
   */
-  
+  getRegisteredStudents: (req,res) => {
+    getRegisteredStudents((err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Data found",
+        data: results
+      });
+    });
+  },
+  getStudentById: (req,res) => {
+    /**Body Require:
+     * user_id
+    */
+    const body = req.body;
+    getStudentById(body, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Data found",
+        data: results
+      });
+    });
+  },
   createAdmin: (req, res) => {
     /**
-     * Body Require:
+     Body Require:
      * name
      * email_id
      * password
      * mobile_number
+     * gender
      */
     const body = req.body;
     const salt = genSaltSync(10);
@@ -45,21 +82,21 @@ const {
         return res.json({
           code: 400,
           status: false,
-          message: "Unable to register user",
+          message: "Unable to register Admin",
           data: []
         });
       }
       return res.json({
         code: 200,
         status: true,
-        message: "User registered successfully",
+        message: "Admin registered successfully",
         data: results
       });
     });
   },
   login: (req, res) => {
     /**
-     * Body Require:
+     Body Require:
      * email_id
      * password
     */
@@ -107,6 +144,7 @@ const {
      * mobile_number
      * password
      * email_id
+     * gender
      * name
      */
     const body = req.body;
@@ -120,16 +158,16 @@ const {
         return false;
       }
       if (!results) {
-        console.log("User details are not updating")
+        console.log("Admin details are not updating")
         return res.json({
           code: 400,
           status: false,
-          message: "Failed to update user",
+          message: "Failed to update admin",
           data: []
         });
       }
       else{
-        console.log("User details are updating");
+        console.log("Admin details are updating");
         return res.json({
           code: 200,
           status: true,
@@ -145,7 +183,7 @@ const {
   */
   createCategory: (req, res) => {
     /**
-     * Body Require:
+     Body Require:
      * category_name
      * category_picture
      * no_of_quiz
@@ -184,13 +222,64 @@ const {
       });
     });
   },
-  // Need to code 
+  getCategoryById: (req, res) => {
+    /**
+     Body Require:
+     * catagory_id
+    */
+    const body = req.body;
+    getCategoryById(body, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Data found",
+        data: results
+      });
+    });
+  },
   updateCategory: (req, res) => {
-
+/**
+    Body Require:
+     * catagory_id
+     * category_name
+     * category_picture
+     * no_of_quiz
+     */
+    const body = req.body;
+    console.log(body);
+    updateCategory(body, (err, results) => {
+      console.log(results);
+      if (err) {
+        console.log(err);
+        return false;
+      }
+      if (!results) {
+        console.log("Category details are not updating")
+        return res.json({
+          code: 400,
+          status: false,
+          message: "Failed to update category",
+          data: []
+        });
+      }
+      else{
+        console.log("Category details are updating");
+        return res.json({
+          code: 200,
+          status: true,
+          message: "Updated successfully",
+          data: results
+        });
+      }
+    });
   },
   searchCategory: (req, res) => {
     /**
-     * Body Require:
+     Body Require:
      * category_name
      * user_id
      */
@@ -224,14 +313,109 @@ const {
   /**
   * Quiz CRUD
   */
-  createQuiz: (req,res) => {
-
+  createQuiz: (req, res) => {
+    /**
+     Body Require:
+     * category_id
+     * quiz_no
+     * picture
+     * quiz_name
+     * no_of_questions
+     * description
+     * status
+     */
+    const body = req.body;
+    createQuiz(body, (err, results) => {
+      console.log(results);
+      if (err) {
+        console.log(err);
+        return res.json({
+          code: 400,
+          status: false,
+          message: "Quiz creation failed",
+          data: []
+        });
+      }
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Sucessfully created new Quiz",
+        data: results
+      });
+    });
   },
   getQuiz: (req,res) => {
-
+    getQuiz((err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Data found",
+        data: results
+      });
+    });
+  },
+  getQuizById: (req,res) => {
+    /**
+     Body Require:
+     * quiz_id
+     */
+    const body = req.body;
+    getQuizById(body, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Data found",
+        data: results
+      });
+    });
   },
   updateQuiz: (req,res) => {
-
+/**
+    Body Require:
+     * quiz_id
+     * category_id
+     * quiz_no
+     * picture
+     * quiz_name
+     * no_of_questions
+     * description
+     * status
+     */
+    const body = req.body;
+    console.log(body);
+    updateQuiz(body, (err, results) => {
+      console.log(results);
+      if (err) {
+        console.log(err);
+        return false;
+      }
+      if (!results) {
+        console.log("Quiz details are not updating")
+        return res.json({
+          code: 400,
+          status: false,
+          message: "Failed to update quiz",
+          data: []
+        });
+      }
+      else{
+        console.log("Quiz details are updating");
+        return res.json({
+          code: 200,
+          status: true,
+          message: "Updated successfully",
+          data: results
+        });
+      }
+    });
   },
   /**
   * Question CRUD
@@ -269,10 +453,76 @@ const {
     });
   },
   getQuestion: (req,res) => {
-
+    getQuestion((err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Data found",
+        data: results
+      });
+    });
+  },
+  getQuestionById: (req,res) => {
+    /**
+     Body Require:
+     * question_id
+     */
+    const body = req.body;
+    getQuestionById(body, (err, results) => {
+      if (err) {
+        console.log(err);
+        return;
+      }
+      return res.json({
+        code: 200,
+        status: true,
+        message: "Data found",
+        data: results
+      });
+    });
   },
   updateQuestion: (req,res) => {
-
+    /**
+   Body Require:
+    * quiz_id
+    * question
+    * option_1
+    * option_2
+    * option_3
+    * option_4
+    * correct_option
+    */
+   const body = req.body;
+    console.log(body);
+    updateQuestion(body, (err, results) => {
+      console.log(results);
+      if (err) {
+        console.log(err);
+        return false;
+      }
+      if (!results) {
+        console.log("Quiz details are not updating")
+        return res.json({
+          code: 400,
+          status: false,
+          message: "Failed to update quiz",
+          data: []
+        });
+      }
+      else{
+        console.log("Quiz details are updating");
+        return res.json({
+          code: 200,
+          status: true,
+          message: "Updated successfully",
+          data: results
+        });
+      }
+    });
   }
 }
   
