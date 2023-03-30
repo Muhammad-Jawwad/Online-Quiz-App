@@ -1,21 +1,26 @@
 const router = require("express").Router();
 
 const {
+    getRegisteredStudents,
+    getStudentById,
     createAdmin,
     login,
     updateAdmin,
 
     getCategory,
+    getCategoryById,
     createCategory,
     updateCategory,
     searchCategory,
 
     getQuiz,
+    getQuizById,
     createQuiz,
     updateQuiz,
 
     createQuestion,
     getQuestion,
+    getQuestionById,
     updateQuestion
 
 } = require("./admin.controller");
@@ -26,6 +31,8 @@ const {
  * Admin Register and login
  */
 router.post("/register", createAdmin);
+router.get("/registeredstudents", getRegisteredStudents);
+router.get("/studentbyid",getStudentById);
 router.post("/login", login);
 router.patch("/updateadmin", updateAdmin);
 
@@ -35,9 +42,10 @@ router.patch("/updateadmin", updateAdmin);
  */
 router.post("/addcategory", createCategory);
 router.get("/getcategory", getCategory);
+router.get("/categorybyid", getCategoryById);
 router.patch("/updatecategory", updateCategory);
 
-router.get("/searchcatagory", searchCategory)
+router.get("/searchcategory", searchCategory)
 
 
 /**
@@ -45,6 +53,7 @@ router.get("/searchcatagory", searchCategory)
  */
 router.post("/addquiz", createQuiz);
 router.get("/getquiz", getQuiz);
+router.get("/quizbyid", getQuizById);
 router.patch("/updatequiz", updateQuiz);
 
 /**
@@ -52,6 +61,7 @@ router.patch("/updatequiz", updateQuiz);
  */
 router.post("/addquestion", createQuestion);
 router.get("/getquestion", getQuestion);
+router.get("/questionbyid", getQuestionById);
 router.patch("/updatequestion", updateQuestion);
 
 
