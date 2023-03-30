@@ -31,6 +31,7 @@ module.exports = {
      * name
      * email_id
      * password
+     * gender
      * mobile_number
      */
     const body = req.body;
@@ -60,6 +61,7 @@ module.exports = {
      * user_id
      * mobile_number
      * password
+     * gender
      * email_id
      * name
      */
@@ -567,3 +569,4 @@ module.exports = {
     });
   }
 }
+
