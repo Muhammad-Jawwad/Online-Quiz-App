@@ -5,12 +5,13 @@ module.exports = {
     create: (data, callBack) => {
         console.log(data);
         pool.query(
-            `insert into register_table(name, email_id, password, mobile_number, profile_picture) 
-              values(?,?,?,?,?)`,
+            `insert into register_table(name, email_id, password, gender, mobile_number, profile_picture) 
+              values(?,?,?,?,?,?)`,
             [
                 data.name,
                 data.email_id,
                 data.password,
+                data.gender,
                 data.mobile_number,
                 ("https://avatars.dicebear.com/api/identicon/" + data.name + ".svg").replace(/\s/g, '')
             ],
@@ -25,11 +26,12 @@ module.exports = {
     updateUser: (data, callBack) => {
         // console.log(data);
         pool.query(
-            `update register_table set name=?, email_id=?, password=?, mobile_number=?, profile_picture=? where id = ?`,
+            `update register_table set name=?, email_id=?, password=?, gender=?, mobile_number=?, profile_picture=? where id = ?`,
             [
                 data.name,
                 data.email_id,
                 data.password,
+                data.gender,
                 data.mobile_number,
                 ("https://avatars.dicebear.com/api/identicon/" + data.name + ".svg").replace(/\s/g, ''),
                 data.user_id
